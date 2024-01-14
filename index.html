@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>渲染优化</title>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        #wrapper {
+            width: 500px;
+            height: 100%;
+            position: relative;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+        .cell {
+            margin: 0;
+            padding: 0;
+            height: 100px;
+            border-bottom: 1px solid gray;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <!-- 设置盒子高度，模拟滚动条 -->
+        <!-- 渲染数据 -->
+    </div>
+</body>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="./largeDataScroll.js"></script>
+<script>
+  // 页面永远只有2屏或3屏的数据
+  // 创建存储20万条数据时间相比较渲染20万条数据的时间可以忽略不计
+  let data = []
+  for(let i = 0; i < 20000; i ++) {
+      data.push(i+1)
+  }
+  // 初始化
+  $('#wrapper').largeDataScroll({
+    data: data,
+    setCell: (row) => {
+      return `<p class='cell'>${row}</p>`
+    }
+  })
+</script>
+</html>

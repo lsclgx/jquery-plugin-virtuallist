@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>渲染优化</title>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        #wrapper {
+            width: 500px;
+            height: 100%;
+            position: relative;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+        .background {
+            width: 500px;
+            height: 4025520px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .list {
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .cell {
+            margin: 0;
+            padding: 0;
+            height: 20px;
+            border-bottom: 1px solid gray;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <!-- 设置盒子高度，模拟滚动条 -->
+        <div class="background"></div>
+        <!-- 渲染数据 -->
+        <div class="list"></div>
+    </div>
+</body>
+<script>
+    // 创建存储20万条数据时间相比较渲染20万条数据的时间可以忽略不计
+    let data = []
+    for(let i = 0; i < 200000; i ++) {
+        data.push(i+1)
+    }
+    // 外层盒子
+    let wrapper = document.querySelector('#wrapper')
+    // 渲染数据用
+    let list = document.querySelector('.list')
+    // 每行高度固定20，当前页面在可视窗口能展示n条，当前页面上展示的第一条在数据中的位置是x，则范围就是[x-n, x+n]或x<n时就是[0，x+n]
+    let scrollRange = []
+    // 每页展示多少条数据
+    let num = Math.ceil(wrapper.clientHeight / 20)
+    // 渲染
+    render(0)
+    // 滚动的时候改变渲染的数据
+    wrapper.onscroll = function(e) {
+        // 滚动高度
+        let n = e.target.scrollTop
+        // 展示的第一条在数据中的位置
+        let first = Math.ceil(n/20)
+        // 如果当前在范围中，则利用list的默认滚动，算是做了节流，也是为了能有滚动边界的效果，不然看到边界的数据是瞬变的
+        if(first > scrollRange[0] && first+num < scrollRange[1]) return
+        // 到了临界点，再更新数据重新渲染
+        render(n)
+    }
+
+    function render(n) {
+        let str = ''
+        let first = Math.ceil(n / 20)
+        let leftData = data.slice(first-num, first)
+        let centerData = data.slice(first, first + num)
+        let rightData = data.slice(first + num, first + 2*num)
+        let runData = [...leftData, ...centerData, ...rightData]
+        for(let i = 0; i < runData.length; i ++) {
+            str += `<p class='cell'>${runData[i]}</p>`
+        }
+        // 替换数据，重新渲染
+        list.innerHTML = str
+        // 改变list在wrapper中的位置。用transform属性的translate不会回流，性能更好
+        list.style.top = 0 + n - leftData.length * 20 + 'px'
+        // 数据改变后，重置范围，在此范围内不替换数据，用list默认滚动
+        scrollRange = [first-leftData.length, first+2*num]
+    }
+
+</script>
+<script>
+
+</script>
+</html>
