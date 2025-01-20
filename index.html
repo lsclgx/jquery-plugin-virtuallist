@@ -9,6 +9,8 @@
         html, body {
             width: 100%;
             height: 100%;
+            margin: 0;
+            padding: 0;
             position: relative;
             overflow: hidden;
         }
@@ -20,11 +22,14 @@
             overflow-x: hidden;
         }
         .cell {
+            width: 100%;
+            height: 100px;
             margin: 0;
             padding: 0;
-            height: 100px;
             border-bottom: 1px solid gray;
             box-sizing: border-box;
+            text-align: center;
+            line-height: 100px;
         }
     </style>
 </head>
@@ -34,21 +39,26 @@
         <!-- 渲染数据 -->
     </div>
 </body>
-<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="./largeDataScroll.js"></script>
+<script src="./jquery@3.7.1.min.js"></script>
+<script src="./jquery-plugin-virtuallist.js"></script>
 <script>
-  // 页面永远只有2屏或3屏的数据
-  // 创建存储20万条数据时间相比较渲染20万条数据的时间可以忽略不计
-  let data = []
-  for(let i = 0; i < 20000; i ++) {
-      data.push(i+1)
-  }
-  // 初始化
-  $('#wrapper').largeDataScroll({
-    data: data,
-    setCell: (row) => {
-      return `<p class='cell'>${row}</p>`
+    // 页面永远只有2屏或3屏的数据
+    // 创建存储20万条数据时间相比较渲染20万条数据的时间可以忽略不计
+    let data = []
+    for(let i = 0; i < 20000; i ++) {
+        data.push(i+1)
     }
-  })
+  
+    /**
+     * 使用插件，初始化
+     * @param {object} data - 全部数据
+     * @param {function} setCell - 设置列表每一行的样式、内容，注意：保证每一行高度固定，用来计算全部数据的高度进而模拟滚动条
+     */
+    $('#wrapper').jqVirtuallist({
+        data: data,
+        setCell: (row) => {
+        return `<p class='cell'>${row}</p>`
+        }
+    })
 </script>
 </html>

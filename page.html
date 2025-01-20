@@ -9,6 +9,8 @@
         html, body {
             width: 100%;
             height: 100%;
+            margin: 0;
+            padding: 0;
             position: relative;
             overflow: hidden;
         }
@@ -21,23 +23,27 @@
         }
         .background {
             width: 500px;
-            height: 4025520px;
+            height: 6000000px;
             position: absolute;
             top: 0;
             left: 0;
         }
         .list {
+            width: 100%;
             height: 100%;
             position: absolute;
             top: 0;
             left: 0;
         }
         .cell {
+            width: 100%;
+            height: 30px;
             margin: 0;
             padding: 0;
-            height: 20px;
             border-bottom: 1px solid gray;
             box-sizing: border-box;
+            text-align: center;
+            line-height: 30px;
         }
     </style>
 </head>
@@ -59,10 +65,10 @@
     let wrapper = document.querySelector('#wrapper')
     // 渲染数据用
     let list = document.querySelector('.list')
-    // 每行高度固定20，当前页面在可视窗口能展示n条，当前页面上展示的第一条在数据中的位置是x，则范围就是[x-n, x+n]或x<n时就是[0，x+n]
+    // 每行高度固定30，当前页面在可视窗口能展示n条，当前页面上展示的第一条在数据中的位置是x，则范围就是[x-n, x+n]或x<n时就是[0，x+n]
     let scrollRange = []
     // 每页展示多少条数据
-    let num = Math.ceil(wrapper.clientHeight / 20)
+    let num = Math.ceil(wrapper.clientHeight / 30)
     // 渲染
     render(0)
     // 滚动的时候改变渲染的数据
@@ -70,7 +76,7 @@
         // 滚动高度
         let n = e.target.scrollTop
         // 展示的第一条在数据中的位置
-        let first = Math.ceil(n/20)
+        let first = Math.ceil(n/30)
         // 如果当前在范围中，则利用list的默认滚动，算是做了节流，也是为了能有滚动边界的效果，不然看到边界的数据是瞬变的
         if(first > scrollRange[0] && first+num < scrollRange[1]) return
         // 到了临界点，再更新数据重新渲染
@@ -79,7 +85,7 @@
 
     function render(n) {
         let str = ''
-        let first = Math.ceil(n / 20)
+        let first = Math.ceil(n / 30)
         let leftData = data.slice(first-num, first)
         let centerData = data.slice(first, first + num)
         let rightData = data.slice(first + num, first + 2*num)
@@ -90,7 +96,7 @@
         // 替换数据，重新渲染
         list.innerHTML = str
         // 改变list在wrapper中的位置。用transform属性的translate不会回流，性能更好
-        list.style.top = 0 + n - leftData.length * 20 + 'px'
+        list.style.top = 0 + n - leftData.length * 30 + 'px'
         // 数据改变后，重置范围，在此范围内不替换数据，用list默认滚动
         scrollRange = [first-leftData.length, first+2*num]
     }
